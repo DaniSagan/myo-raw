@@ -15,6 +15,8 @@ except ImportError:
 from common import *
 from myo_raw import MyoRaw
 
+SUBSAMPLE = 3
+K = 15
 NUMSAMPLES = 15
 class NNClassifier(object):
     '''A wrapper for sklearn's nearest-neighbor classifier that stores
@@ -54,8 +56,8 @@ class NNClassifier(object):
         return self.Y[ind]
 
     def classify(self, d):
-        if self.X.shape[0] < 20: return 0
-        if self.nn is None: return self.nearest(d)
+        if self.X.shape[0] < K * SUBSAMPLE: return 0
+        if not HAVE_SK: return self.nearest(d)
         return int(self.nn.predict(d)[0])
 
 
@@ -83,19 +85,29 @@ class Myo(MyoRaw):
 
         r, n = self.history_cnt.most_common(1)[0]
         if self.last_pose is None or (n > self.history_cnt[self.last_pose] + 5 and n > Myo.HIST_LEN / 2):
-            self.proc_pose(r)
+            self.on_raw_pose(r)
             self.last_pose = r
 
-    def add_pose_handler(self, h):
+    def add_raw_pose_handler(self, h):
         self.pose_handlers.append(h)
 
-    def proc_pose(self, pose):
+    def on_raw_pose(self, pose):
         for h in self.pose_handlers:
             h(pose)
 
 if __name__ == '__main__':
+    import subprocess
     m = Myo(NNClassifier(), sys.argv[1] if len(sys.argv) >= 2 else None)
-    m.add_pose_handler(print)
+    m.add_raw_pose_handler(print)
+
+    def page(pose):
+        if pose == 5:
+            subprocess.call(['xte', 'key Page_Down'])
+        elif pose == 6:
+            subprocess.call(['xte', 'key Page_Up'])
+
+    m.add_raw_pose_handler(page)
+
     m.connect()
 
     while True:
