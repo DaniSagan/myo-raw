@@ -233,11 +233,21 @@ class MyoRaw(object):
 
         ## add data handlers
         def handle_data(p):
+            if len(p.payload) < 5:
+                print('Payload error, reconnect', len(p.payload))
+                self.disconnect()
+                tty = self.detect_tty()
+                self.bt = BT(tty)
+                time.sleep(5)
+                self.connect()
+                return
             c, attr, typ = unpack('BHB', p.payload[:4])
+        
             pay = p.payload[5:]
 
             if attr == 0x27:
                 vals = unpack('8HB', pay)
+                
                 ## not entirely sure what the last byte is, but it's a bitmask that
                 ## seems to indicate which sensors think they're being moved around or
                 ## something
@@ -256,7 +266,7 @@ class MyoRaw(object):
 
     def disconnect(self):
         self.bt.disconnect(self.conn)
-
+        self.bt.ser.close()
 
     def vibrate(self, length):
         if length in xrange(1, 4):

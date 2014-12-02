@@ -59,6 +59,7 @@ if __name__ == '__main__':
     rcounter = 0
     rtime = 10
     rcutoff = 23
+    engaged = False
     pressedkeys = [None]
     try:
         while True:
@@ -75,17 +76,28 @@ if __name__ == '__main__':
                         if pressedkeys[-1] != r:
                             print('pressed', r)
                             pressedkeys.append(r)
+                            if pressedkeys[-1] == FIST:
+                                print('FIST VIBRATE')
+                                engaged = True
+                                m.vibrate(1)
                             if len(pressedkeys) > 20:
                                 pressedkeys.pop(0)
                             if pressedkeys[-2] == FIST and pressedkeys[-1] == SPREAD:
                                 print("play")
                                 win32api.keybd_event(VK_MEDIA_PLAY_PAUSE, HWCODE_VK_MEDIA_PLAY_PAUSE)
+                                m.vibrate(1)
                             elif pressedkeys[-2] == FIST and pressedkeys[-1] == EXTEND:
                                 print("next")
                                 win32api.keybd_event(VK_MEDIA_NEXT_TRACK, HWCODE_VK_MEDIA_NEXT_TRACK)
+                                m.vibrate(1)
                             elif pressedkeys[-2] == FIST and pressedkeys[-1] == FLEX:
                                 print("prev")
                                 win32api.keybd_event(VK_MEDIA_PREV_TRACK, HWCODE_VK_MEDIA_PREV_TRACK)
+                                m.vibrate(1)
+                            elif pressedkeys[-2] == FIST and pressedkeys[-1] == 0:
+                                print("cancel")
+                                m.vibrate(1)
+                                m.vibrate(1)
             if HAVE_PYGAME:
                 for ev in pygame.event.get():
                     if ev.type == QUIT or (ev.type == KEYDOWN and ev.unicode == 'q'):
