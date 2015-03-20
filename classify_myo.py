@@ -131,18 +131,10 @@ if __name__ == '__main__':
                     scr.fill((0,0,0), (x+130, y + txt.get_height() / 2 - 10, len(m.history) * 20, 20))
                     scr.fill(clr, (x+130, y + txt.get_height() / 2 - 10, m.history_cnt[i] * 20, 20))
 
-<<<<<<< HEAD
-                if HAVE_SK and m.cls.nn != None:
-                    
-                    dists, inds = m.cls.nn.kneighbors(hnd.emg)
-                    for i, (d, ind) in enumerate(zip(dists[0], inds[0])):
-                        y = m.cls.Y[myo.NUMSAMPLES*ind]
-=======
                 if HAVE_SK and m.cls.nn is not None:
                     dists, inds = m.cls.nn.kneighbors(hnd.emg)
                     for i, (d, ind) in enumerate(zip(dists[0], inds[0])):
                         y = m.cls.Y[myo.SUBSAMPLE*ind]
->>>>>>> 6873d04d647702b304b0592ee25994d196659bb0
                         text(scr, font, '%d %6d' % (y, d), (650, 20 * i))
 
                 pygame.display.flip()

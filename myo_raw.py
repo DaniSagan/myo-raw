@@ -66,31 +66,28 @@ class BT(object):
         self.handlers = []
 
     ## internal data-handling methods
+    def procPacket(self, c):
+        ret = self.proc_byte(ord(c))
+        if ret:
+            if ret.typ == 0x80:
+                self.handle_event(ret)                
+            return ret
     def recv_packet(self, timeout=None):
         t0 = time.time()
-        try:
-            self.ser.timeout = timeout
-        except:
-            print('recv timeout error')
-            pass
         while timeout is None or time.time() < t0 + timeout:
             if timeout is not None: self.ser.timeout = t0 + timeout - time.time()
             c = self.ser.read()
             if not c: return None
-
-            ret = self.proc_byte(ord(c))
-            if ret:
-                if ret.typ == 0x80:
-                    self.handle_event(ret)
-                return ret
-
+            p = self.procPacket(c)
+            if p != None: return p
+    
     def recv_packets(self, timeout=.5):
+        bytesToRead = self.ser.inWaiting()
+        bytes = self.ser.read(bytesToRead)
         res = []
-        t0 = time.time()
-        while time.time() < t0 + timeout:
-            p = self.recv_packet(t0 + timeout - time.time())
-            if not p: return res
-            res.append(p)
+        for c in bytes:
+            res.append(self.procPacket(c))
+        
         return res
 
     def proc_byte(self, c):
@@ -195,8 +192,8 @@ class MyoRaw(object):
 
         return None
 
-    def run(self, timeout=None):
-        self.bt.recv_packet(timeout)
+    def run(self, timeout):
+        self.bt.recv_packets(timeout=timeout)
 
     def connect(self):
         ## stop everything from before
@@ -448,6 +445,7 @@ if __name__ == '__main__':
         if HAVE_PYGAME:
             ## update pygame display
             plot(scr, [e / 2000. for e in emg])
+            print(emg)
         else:
             print(emg)
 
