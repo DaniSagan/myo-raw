@@ -70,7 +70,7 @@ class BT(object):
         ret = self.proc_byte(ord(c))
         if ret:
             if ret.typ == 0x80:
-                self.handle_event(ret)                
+                self.handle_event(ret)
             return ret
     def recv_packet(self, timeout=None):
         t0 = time.time()
@@ -80,14 +80,14 @@ class BT(object):
             if not c: return None
             p = self.procPacket(c)
             if p != None: return p
-    
+
     def recv_packets(self, timeout=.5):
         bytesToRead = self.ser.inWaiting()
         bytes = self.ser.read(bytesToRead)
         res = []
         for c in bytes:
             res.append(self.procPacket(c))
-        
+
         return res
 
     def proc_byte(self, c):
@@ -276,7 +276,7 @@ class MyoRaw(object):
 
             if attr == 0x27:
                 vals = unpack('8HB', pay)
-                
+
                 ## not entirely sure what the last byte is, but it's a bitmask that
                 ## seems to indicate which sensors think they're being moved around or
                 ## something

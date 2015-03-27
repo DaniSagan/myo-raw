@@ -1,6 +1,8 @@
 # -*- coding=utf-8 -*-
 
-class MyographData(Array):
+from data.array import Array
+
+class Myo(Array):
     def __init__(self, *data):
         Array.__init__(self)
         self.data = data
