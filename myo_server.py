@@ -38,6 +38,7 @@ class App:
         self.device.add_imu_handler(proc_imu)
 
         self.device.connect()
+        self.device.set_sleep_mode(1)
 
         pygame.init()
         self.init_time = time.time()

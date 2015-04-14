@@ -369,6 +369,9 @@ class MyoRaw(object):
             ## first byte tells it to vibrate; purpose of second byte is unknown
             self.write_attr(0x19, pack('3B', 3, 1, length))
 
+    def set_sleep_mode(self, mode):
+        if mode in [0, 1]:
+            self.write_attr(0x19, pack('3B', 9, 1, mode))
 
     def add_emg_handler(self, h):
         self.emg_handlers.append(h)
