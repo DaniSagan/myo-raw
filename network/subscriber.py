@@ -7,12 +7,22 @@ import select
 import sys
 sys.path.append('..')
 from data.device_data import Packet
+import time
 
 
 class Subscriber(object):
-    def __init__(self, host, port):
+    def __init__(self, host, port, buffer_size=1024):
+        self.buffer_size = buffer_size
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((host, port))
+        connected = False
+        print('Waiting for connection...')
+        while not connected:
+            try:
+                self.sock.connect((host, port))
+                connected = True
+            except:
+                time.sleep(0.1)
+
         print('Connected to publisher')
         self.callbacks = []
 
@@ -23,7 +33,7 @@ class Subscriber(object):
             to_read, to_write, in_error = select.select(socket_list, [], [])
             for sock in to_read:
                 if sock == self.sock:
-                    data = sock.recv(1024)
+                    data = sock.recv(self.buffer_size)
                     if data:
                         print('Data received')
                         self.execute_callbacks(data)

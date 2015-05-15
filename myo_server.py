@@ -38,6 +38,7 @@ class App:
         self.device.add_imu_handler(proc_imu)
 
         self.device.connect()
+        #self.device.write_attr(0x19, b'\x01\x03\x01\x03\x01')  # raw data?
         self.device.set_sleep_mode(1)
 
         pygame.init()
@@ -62,11 +63,6 @@ class App:
         print('-'*64)
         self.publisher.publish(packet.pack())
         self.frame += 1
-        """try:
-            self.sock.connect(('', 1000))
-            self.sock.sendall(packet.pack())
-        except socket.error:
-            pass"""
 
     def render(self):
         pass

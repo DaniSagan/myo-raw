@@ -87,7 +87,10 @@ class BT(object):
         res = []
         for c in bytes:
             res.append(self.procPacket(c))
-
+        ##
+        # if bytesToRead > 0:
+        #    print('res:', res)
+        ##
         return res
 
     def proc_byte(self, c):
@@ -274,7 +277,7 @@ class MyoRaw(object):
             c, attr, typ = unpack('BHB', p.payload[:4])
             pay = p.payload[5:]
 
-            if attr == 0x27:
+            if attr == 0x27:  # 39
                 vals = unpack('8HB', pay)
 
                 ## not entirely sure what the last byte is, but it's a bitmask that
@@ -283,7 +286,7 @@ class MyoRaw(object):
                 emg = vals[:8]
                 moving = vals[8]
                 self.on_emg(emg, moving)
-            elif attr == 0x1c:
+            elif attr == 0x1c:  # 28
                 vals = unpack('10h', pay)
                 quat = vals[:4]
                 acc = vals[4:7]
@@ -417,7 +420,7 @@ if __name__ == '__main__':
 
     last_vals = None
     def plot(scr, vals):
-        DRAW_LINES = False
+        DRAW_LINES = True
 
         global last_vals
         if last_vals is None:
